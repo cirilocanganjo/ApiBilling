@@ -1,0 +1,5 @@
+ body { background: #fff; }
+.tabs { border-bottom: 1px solid #ddd; margin-bottom: 20px; }
+.tabs a { margin-right: 25px; padding-bottom: 10px; display: inline-block; font-size: 16px; color: #000; text-decoration: none; }
+.tabs a.active { border-bottom: 3px solid #007bff; font-weight: bold; }
+.image-box { width: 220px; height: 220px; border: 1px solid #ccc; border-radius: 6px; display: flex; justify-content: center; align-items: center; flex-direction: column; cursor: pointer; }

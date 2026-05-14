@@ -4,42 +4,44 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use \Illuminate\Support\Str;
+use Illuminate\Support\Str;
+use Laravel\Fortify\TwoFactorAuthenticatable;
 
 class User extends Authenticatable
 {
-       
-    use HasApiTokens,SoftDeletes,HasFactory, Notifiable;   
-    const TYPE_SUPER_ADMIN = 'SUPER_ADMIN';
-    const TYPE_ADMIN  = 'ADMIN';
-    const TYPE_USER = 'USER';
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasFactory, Notifiable, TwoFactorAuthenticatable;
 
-    protected $guarded = ['id', 'uuid'];
-    protected $fillable = [       
-        'name',        
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
         'email',
         'password',
-        'company_id',
-        'type',
-        'status',
-        'last_login_at',
-        'created_by',
-        'updated_by',
-        'is_deleted',
-        'deleted_by',
     ];
 
-    
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
     protected $hidden = [
         'password',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
         'remember_token',
     ];
 
-  
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -48,42 +50,15 @@ class User extends Authenticatable
         ];
     }
 
-    public function company()
+    /**
+     * Get the user's initials
+     */
+    public function initials(): string
     {
-        return $this->belongsTo(Company::class);
-    }
-
-    public function stored_by_user() {
-        return $this->belongsTo(User::class, 'created_by', 'id');
-    }
-
-    public function updated_by_user() {
-        return $this->belongsTo(User::class, 'updated_by', 'id');
-    }
-
-    public function isAdmin(): bool
-    {
-        return in_array($this->type, [self::TYPE_ADMIN]);
-    }
-
-
-    public function isSuperAdmin(): bool
-    {
-        return in_array($this->type, [self::TYPE_SUPER_ADMIN]);
-    }
-
-    public function deleted_by_user() {
-        return $this->belongsTo(User::class, 'deleted_by', 'id');
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->uuid)) {
-                $model->uuid = (string) Str::uuid();
-            }
-        });
+        return Str::of($this->name)
+            ->explode(' ')
+            ->take(2)
+            ->map(fn ($word) => Str::substr($word, 0, 1))
+            ->implode('');
     }
 }

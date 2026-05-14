@@ -1,75 +1,69 @@
 <?php
 
 namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
 
 class Client extends Model
 {
-    use SoftDeletes;
-    protected $guarded= ['id', 'uuid'];
+    use HasFactory, SoftDeletes;
+
+    protected $table = 'clients';
+
     protected $fillable = [
-        'name',
         'company_id',
+        'name',
         'tax_id',
-        'phone',
-        'address',
         'country_id',
         'province_id',
         'city_id',
+        'address',
         'complement',
         'neighborhood',
         'postal_code',
         'recipient',
         'notes',
+        'phone',
         'email',
         'created_by',
-        'updated_by',
-        'is_deleted',
-        'deleted_by',
-
+        'updated_by'
     ];
 
+    
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
+
+     // Relacionamento com Country
+     public function country()
+     {
+         return $this->belongsTo(Country::class);
+     }
+ 
+     // Relacionamento com Province
+     public function province()
+     {
+         return $this->belongsTo(Province::class);
+     }
+ 
+     // Relacionamento com City
+     public function city()
+     {
+         return $this->belongsTo(City::class);
+     }
+     
+    // Relacionamentos
     public function company()
     {
         return $this->belongsTo(Company::class);
     }
 
-       public function city () {
-        return $this->belongsto(City::class);
-    } 
-
-    public function province () {
-        return $this->belongsto(Province::class);
-
-    }
-
-     public function country () {
-        return $this->belongsto(Country::class);
-    }
-
-    public function stored_by_user() {
-        return $this->belongsTo(User::class, 'created_by', 'id');
-    }
-
-    public function updated_by_user() {
-        return $this->belongsTo(User::class, 'updated_by', 'id');
-    }
-
-    public function deleted_by_user() {
-        return $this->belongsTo(User::class, 'deleted_by', 'id');
-    }
-
-    // Gera automaticamente o UUID ao criar um novo registo
-    protected static function boot()
+    public function sales()
     {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->uuid)) {
-                $model->uuid = (string) Str::uuid();
-            }
-        });
+        return $this->hasMany(Sale::class);
     }
 }

@@ -7,23 +7,37 @@ use Illuminate\Foundation\Configuration\Middleware;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
-        api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
-    )    
-
+    )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->append(\Illuminate\Http\Middleware\HandleCors::class); // Adiciona o middleware CORS
-        $middleware->prepend(\App\Http\Middleware\ForceHttps::class); // Adiciona o middleware ForceHttps no início da pilha de middlewares
         $middleware->alias([
-            'token_expiration' => \App\Http\Middleware\CheckTokenExpiration::class,
-            'super_admin' => \App\Http\Middleware\SuperAdmin::class,        
+            'is_authenticated' => \App\Http\Middleware\VerifyIfUserIsAuthenticated::class,
         ]);
-    }) 
-     
-
-    ->withExceptions(function (Exceptions $exceptions): void {
-        // Pode configurar handlers custom aqui se quiser
     })
+    ->withExceptions(function (Exceptions $exceptions): void {
+    // Exemplo: Para qualquer exceção HTTP, usar uma view customizada
+  $exceptions->render(function (Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {
+    $status = $e->getStatusCode();
 
-    ->create();
+    if (view()->exists("errors.{$status}")) {
+        return response()->view("errors.{$status}", [
+            'exception' => $e,
+            'status' => $status
+        ], $status);
+    }
+
+        return response()->view('errors.default', [
+            'exception' => $e,
+            'status' => $status
+        ], $status);
+    });
+
+
+    // Ignorar report de certas exceções (ex: não logar 404s)
+    $exceptions->dontReportDuplicates();
+    $exceptions->dontReport([
+        \Illuminate\Http\Exceptions\ThrottleRequestsException::class,
+    ]);
+
+    })->create();

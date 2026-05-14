@@ -3,48 +3,25 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
 
 class City extends Model
 {
-    use SoftDeletes;
-    protected $guarded = ['id', 'uuid'];
-    protected $fillable = [
-        'province_id',
-        'name',
-        'iso_code',
-        'created_by',
-        'updated_by',
-        'is_deleted',
-        'deleted_by',
-    ];
+    protected $table = 'cities';
+    protected $fillable = ['province_id', 'name', 'postal_code_format'];
 
-    public function province () {
+    // Relacionamentos
+    public function province()
+    {
         return $this->belongsTo(Province::class);
     }
 
-    public function stored_by_user() {
-        return $this->belongsTo(User::class, 'created_by', 'id');
-    }
-
-    public function updated_by_user() {
-        return $this->belongsTo(User::class, 'updated_by', 'id');
-    }
-
-    public function deleted_by_user() {
-        return $this->belongsTo(User::class, 'deleted_by', 'id');
-    }
-
-    // Gera automaticamente o UUID ao criar um novo registo
-    protected static function boot()
+    public function clients()
     {
-        parent::boot();
+        return $this->hasMany(Client::class);
+    }
 
-        static::creating(function ($model) {
-            if (empty($model->uuid)) {
-                $model->uuid = (string) Str::uuid();
-            }
-        });
+    public function suppliers()
+    {
+        return $this->hasMany(Supplier::class);
     }
 }

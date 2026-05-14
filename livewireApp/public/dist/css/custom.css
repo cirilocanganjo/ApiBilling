@@ -1,0 +1,78 @@
+/* resources/css/custom.css */
+/* <!-- @section('styles')
+<style>
+    .box-content {
+        background: #fff;
+        padding: 20px;
+        height: 100%;
+    }
+</style>
+@endsection --> */
+.box-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    height: auto; /* mais confiável que 100% */
+}
+.divSearch {
+    background-color: #FAFAFA;
+    padding: 15px 15px 15px 15px;
+    border: 1px solid #DDDDDD;
+}
+.clsPaddingBottom {
+    padding-bottom: 15px;
+}
+.clsPaddingRigthLabelForInput {
+    padding-right: 10px;
+}
+
+/* Botões "Anterior" e "Próximo" desabilitados */
+/* Aplica cursor em toda a área do botão */
+.dataTables_paginate .paginate_button.previous.disabled,
+.dataTables_paginate .paginate_button.next.disabled {
+    cursor: not-allowed ; /* cursor proibido */
+}
+
+.dataTables_paginate .paginate_button.previous.disabled a,
+.dataTables_paginate .paginate_button.next.disabled a {
+    pointer-events: none;           /* impede clique */
+    opacity: 0.5;                   /* efeito visual */
+}
+
+
+/* Labels à direita no desktop */
+.control-label {
+    text-align: right;
+}
+
+/* Ajuste responsivo para mobile (xs/sm) */
+@media (max-width: 575.98px) {
+    .control-label {
+        text-align: left;
+        margin-bottom: 5px;
+    }
+}
+
+/* .clsLabelFontWeight {
+  font-weight: 0 ;
+}
+     */
+
+
+
+
+     /*
+        As Classes abaixo foram adicionadas pelo Cirilo Canganjo
+     */
+
+    .clsButtonOptions {
+        border:1px solid #ccc  ;
+        background: white; color:#000 ;
+    }
+
+    .clsButtonOptions:hover {
+            background-color:#0d6efd ;
+            color: white ;
+    }
+
